@@ -69,7 +69,7 @@
                 </button>
             </form>
 
-            <!-- <p class="switch">Need an admin account? <a href="{{ route('register') }}">Register here</a></p> -->
+            <p class="switch">Need an admin account? <a href="{{ route('register') }}">Register here</a></p>
             <p class="back"><a href="{{ route('donors.public.search') }}"><i class="fa-solid fa-arrow-left me-1"></i>Back to donor search</a></p>
         </div>
     </div>
