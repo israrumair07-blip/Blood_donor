@@ -1,5 +1,7 @@
 <?php
 
+$adminEmails = env('ADMIN_EMAILS') ?: env('ADMIN_EMAIL', '');
+
 return [
 
     /*
@@ -35,8 +37,12 @@ return [
         ],
     ],
 
-  'admin' => [
-    'email' => env('ADMIN_EMAIL'),
-],
+    'admin' => [
+        'email' => env('ADMIN_EMAIL'),
+        'emails' => array_values(array_filter(array_map(
+            static fn (string $email): string => strtolower(trim($email)),
+            explode(',', $adminEmails)
+        ))),
+    ],
 
 ];

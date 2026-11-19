@@ -4,14 +4,30 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
+use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmailContract
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, MustVerifyEmailTrait, Notifiable;
+
+    public function isAdminEmail(): bool
+    {
+        return in_array(
+            strtolower($this->email),
+            config('services.admin.emails', []),
+            true
+        );
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->isAdminEmail() && $this->hasVerifiedEmail();
+    }
 
     /**
      * The attributes that are mass assignable.

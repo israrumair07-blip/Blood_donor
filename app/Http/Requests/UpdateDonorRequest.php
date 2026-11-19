@@ -18,14 +18,16 @@ class UpdateDonorRequest extends FormRequest
         $donorId = $donor instanceof \App\Models\Donor ? $donor->id : $donor;
 
         return [
-            'name'        => 'required|string|max:100',
-            'phone'       => ['required', 'string', 'max:20', 'regex:/^[0-9+\-\s()]{7,20}$/', Rule::unique('donors', 'phone')->ignore($donorId)],
-            'blood_group' => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'city'        => 'required|string|max:100',
-            'gender'            => 'required|in:Male,Female,Other',
-            'guardian_name'     => 'nullable|required_if:gender,Female|string|max:100',
-            'guardian_relation' => 'nullable|required_if:gender,Female|string|max:50',
-            'guardian_phone'    => ['nullable', 'required_if:gender,Female', 'string', 'max:20', 'regex:/^[0-9+\-\s()]{7,20}$/'],
+            'name'                   => 'required|string|max:100',
+            'phone'                  => ['required', 'string', 'max:20', 'regex:/^[0-9+\-\s()]{7,20}$/', Rule::unique('donors', 'phone')->ignore($donorId)],
+            'email'                  => 'nullable|email|max:150',
+            'blood_group'            => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'city'                   => 'required|string|max:100',
+            'notify_urgent_requests' => 'nullable|boolean',
+            'gender'                 => 'required|in:Male,Female,Other',
+            'guardian_name'          => 'nullable|required_if:gender,Female|string|max:100',
+            'guardian_relation'      => 'nullable|required_if:gender,Female|string|max:50',
+            'guardian_phone'         => ['nullable', 'required_if:gender,Female', 'string', 'max:20', 'regex:/^[0-9+\-\s()]{7,20}$/'],
         ];
     }
 

@@ -14,15 +14,17 @@ class StoreDonorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'              => 'required|string|max:100',
-            'phone'             => ['required', 'string', 'max:20', 'regex:/^[0-9+\-\s()]{7,20}$/', 'unique:donors,phone'],
-            'gender'            => 'required|in:Male,Female,Other',
-            'blood_group'       => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-            'city'              => 'required|string|max:100',
-            'is_available'      => 'nullable|boolean',
-            'guardian_name'     => 'nullable|required_if:gender,Female|string|max:100',
-            'guardian_relation' => 'nullable|required_if:gender,Female|string|max:50',
-            'guardian_phone'    => ['nullable', 'required_if:gender,Female', 'string', 'max:20', 'regex:/^[0-9+\-\s()]{7,20}$/'],
+            'name'                   => 'required|string|max:100',
+            'phone'                  => ['required', 'string', 'max:20', 'regex:/^[0-9+\-\s()]{7,20}$/', 'unique:donors,phone'],
+            'email'                  => 'required|email|max:150',
+            'gender'                 => 'required|in:Male,Female,Other',
+            'blood_group'            => 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+            'city'                   => 'required|string|max:100',
+            'is_available'           => 'nullable|boolean',
+            'notify_urgent_requests' => 'nullable|boolean',
+            'guardian_name'          => 'nullable|required_if:gender,Female|string|max:100',
+            'guardian_relation'      => 'nullable|required_if:gender,Female|string|max:50',
+            'guardian_phone'         => ['nullable', 'required_if:gender,Female', 'string', 'max:20', 'regex:/^[0-9+\-\s()]{7,20}$/'],
         ];
     }
 

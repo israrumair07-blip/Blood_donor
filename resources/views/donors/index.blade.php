@@ -3,101 +3,90 @@
 @section('title', 'Donors List - Blood Donor')
 
 @section('content')
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+    /* Donors page only. Shared styles (buttons, panels, tables, tags, forms, modals, pagination) live in layouts/app.blade.php */
 
-    .adm {
-        --red: #b3122b; --red-dark: #8c0d21; --rose: #fdebee;
-        --ink: #1c2130; --muted: #6b7280; --line: #e8e9ee; --bg: #f5f6fa;
-        font-family: 'Manrope', system-ui, sans-serif; color: var(--ink);
+    /* Filter bar */
+    .adm .filter-panel { margin-top: -2.6rem; position: relative; z-index: 2; margin-left: 1.25rem; margin-right: 1.25rem; }
+    .adm .search-wrap { position: relative; }
+    .adm .search-wrap > i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--red); pointer-events: none; font-size: .85rem; }
+    .adm .search-wrap .form-control { padding-left: 2.6rem; }
+    .adm .page-hero.has-overlap { padding-bottom: 4.4rem; }
+
+    /* Donor cell */
+    .adm .donor-cell { display: flex; align-items: center; gap: .85rem; }
+    .adm .avatar {
+        width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--rose); color: var(--red); border: 1px solid var(--rose-line); font-weight: 800; font-size: .85rem;
     }
-    .adm .page-title { font-weight: 800; letter-spacing: -.4px; margin: 0; }
-    .adm .page-sub { color: var(--muted); font-size: .9rem; margin: 0; }
+    .adm .donor-name { font-weight: 700; line-height: 1.2; }
+    .adm .donor-phone { font-weight: 500; font-variant-numeric: tabular-nums; }
+    .adm .donor-city { color: #4a3d40; font-weight: 500; }
+    .adm .donors-table { min-width: 900px; }
 
-    .adm .btn-brand { background: var(--red); color: #fff; border: 0; border-radius: 10px; font-weight: 700; padding: .55rem 1.1rem; }
-    .adm .btn-brand:hover { background: var(--red-dark); color: #fff; }
-    .adm .btn-soft { background: #fff; color: var(--ink); border: 1.5px solid var(--line); border-radius: 10px; font-weight: 700; }
-    .adm .btn-soft:hover { border-color: var(--red); color: var(--red); }
+    /* Guardian line under the phone number */
+    .adm .sub-line {
+        display: inline-flex; align-items: center; flex-wrap: wrap; gap: .1rem; margin-top: .4rem;
+        font-size: .68rem; color: var(--red-dark); background: var(--rose); border-radius: 999px; padding: .22rem .65rem; font-weight: 600;
+    }
+    .adm .modal-body .sub-line { background: transparent; color: var(--muted); padding: 0; margin-top: .4rem; font-weight: 500; border-radius: 0; }
 
-    .adm .panel { background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 4px 16px rgba(28, 33, 48, .05); overflow: hidden; }
-    .adm .panel-head { padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-    .adm .panel-head h6 { margin: 0; font-weight: 800; }
+    /* Actions */
+    .adm .actions { display: inline-flex; flex-wrap: nowrap; gap: .4rem; align-items: center; }
+    .adm .icon-btn:hover.danger, .adm .icon-btn.danger:hover { border-color: var(--red); color: #fff; background: var(--red); }
 
-    /* Stat cards */
-    .adm .stat { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 16px rgba(28, 33, 48, .05); }
-    .adm .stat .ico { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-    .adm .stat .num { font-size: 1.8rem; font-weight: 800; line-height: 1; }
-    .adm .stat .lbl { color: var(--muted); font-size: .82rem; font-weight: 600; margin-top: .25rem; }
-    .adm .ico-red { background: var(--rose); color: var(--red); }
-    .adm .ico-green { background: #e6f6ee; color: #1a9d5b; }
-    .adm .ico-amber { background: #fff4d6; color: #b27a00; }
+    /* Empty state */
+    .adm .empty-row .ring {
+        width: 58px; height: 58px; border-radius: 50%; margin-bottom: .8rem; font-size: 1.2rem;
+        display: inline-flex; align-items: center; justify-content: center;
+        border: 1px solid var(--red); color: var(--red);
+    }
+    .adm .empty-row strong { display: block; color: var(--ink); font-weight: 800; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .2rem; }
 
-    /* Tables */
-    .adm table { margin: 0; }
-    .adm table thead th { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); background: #fafbfd; border-bottom: 1px solid var(--line); font-weight: 700; padding: .8rem 1rem; white-space: nowrap; }
-    .adm table tbody td { padding: .85rem 1rem; border-color: var(--line); vertical-align: middle; }
-    .adm table tbody tr:hover { background: #fcfcfe; }
-
-    .adm .group-pill { display: inline-block; min-width: 42px; text-align: center; background: var(--red); color: #fff; font-weight: 800; font-size: .82rem; padding: .25rem .6rem; border-radius: 999px; }
-    .adm .tag { display: inline-block; font-size: .76rem; font-weight: 700; padding: .28rem .7rem; border-radius: 999px; }
-    .adm .tag-ok { background: #e6f6ee; color: #146c43; }
-    .adm .tag-off { background: #eceef3; color: #5a6072; }
-    .adm .tag-wait { background: #fff4d6; color: #8a6100; }
-    .adm .tag-cool { background: #e7f0ff; color: #1d4ed8; }
-
-    .adm .icon-btn { width: 34px; height: 34px; border-radius: 10px; border: 1.5px solid var(--line); background: #fff; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; transition: .15s; }
-    .adm .icon-btn:hover { border-color: var(--red); color: var(--red); background: var(--rose); }
-    .adm .icon-btn.edit:hover { border-color: #2563eb; color: #2563eb; background: #eef4ff; }
-    .adm .btn-donated { background: var(--rose); color: var(--red-dark); border: 1.5px solid #f3bcc6; border-radius: 10px; font-weight: 700; font-size: .8rem; padding: .35rem .7rem; }
-    .adm .btn-donated:hover { background: var(--red); color: #fff; border-color: var(--red); }
-    .adm .btn-confirm { background: #1a9d5b; color: #fff; border: 0; border-radius: 10px; font-weight: 700; font-size: .8rem; padding: .4rem .8rem; }
-    .adm .btn-confirm:hover { background: #148049; color: #fff; }
-    .adm .btn-reject { background: #fff; color: var(--muted); border: 1.5px solid var(--line); border-radius: 10px; font-weight: 700; font-size: .8rem; padding: .4rem .8rem; }
-    .adm .btn-reject:hover { border-color: var(--red); color: var(--red); }
-
-    /* Forms */
-    .adm .form-label { font-size: .82rem; font-weight: 700; }
-    .adm .form-control, .adm .form-select { height: 44px; border-radius: 10px; border: 1.5px solid var(--line); font-weight: 500; }
-    .adm .form-control:focus, .adm .form-select:focus { border-color: var(--red); box-shadow: 0 0 0 .2rem rgba(179, 18, 43, .15); }
-    .adm .form-check-input:checked { background-color: var(--red); border-color: var(--red); }
-
-    /* Alerts */
-    .adm .alert { border: 0; border-radius: 12px; font-weight: 600; }
-    .adm .alert-success { background: #e6f6ee; color: #146c43; }
-    .adm .alert-info { background: #e7f0ff; color: #1d4ed8; }
-    .adm .alert-danger { background: var(--rose); color: var(--red-dark); }
-    .adm .alert-warning { background: #fff4d6; color: #8a6100; }
-
-    /* Modals */
-    .adm .modal-content { border: 0; border-radius: 18px; overflow: hidden; }
-    .adm .modal-header.brand { background: var(--red); color: #fff; border: 0; }
-    .adm .modal-header.edit { background: #1d4ed8; color: #fff; border: 0; }
-    .adm .modal-footer { border-top: 1px solid var(--line); }
-
-    /* Pagination */
-    .adm .pager nav { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
-    .adm .pager nav > div:first-child { display: none; }
-    .adm .pager nav > div:last-child { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
-    .adm .pager p.small { margin: 0; color: var(--muted); font-weight: 600; }
-    .adm .pagination { gap: .35rem; margin: 0; flex-wrap: wrap; justify-content: center; }
-    .adm .pagination .page-link { min-width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid var(--line); border-radius: 10px !important; color: var(--ink); font-weight: 700; background: #fff; }
-    .adm .pagination .page-link:hover { background: var(--rose); border-color: var(--red); color: var(--red); }
-    .adm .pagination .page-item.active .page-link { background: var(--red); border-color: var(--red); color: #fff; }
-    .adm .pagination .page-item.disabled .page-link { background: var(--bg); color: #b5b8c2; }
-
-    .adm .empty-row { text-align: center; color: var(--muted); padding: 2.5rem 1rem !important; }
-
-    .adm .guardian-box { background: var(--rose); border: 1.5px solid #f6c9d1; border-radius: 14px; padding: 1rem; }
-    .adm .guardian-box .title { color: var(--red-dark); font-weight: 800; font-size: .9rem; }
+    /* Guardian box inside modals */
+    .adm .guardian-box { background: var(--rose); border: 1px solid var(--rose-line); border-radius: 16px; padding: 1.1rem; }
+    .adm .guardian-box .title { color: var(--red-dark); font-weight: 800; font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; }
     .adm .guardian-box .form-control, .adm .guardian-box .form-select { background: #fff; }
-    .adm .sub-line { font-size: .75rem; color: var(--muted); margin-top: .15rem; }
+
+    /* Modal polish */
+    .adm .modal-header { padding: 1.25rem 1.5rem; }
+    .adm .modal-header::after {
+        content: ""; position: absolute; right: -30px; top: -40px; width: 140px; height: 140px; border-radius: 50%; z-index: -1;
+        background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .14), transparent 70%);
+    }
+    .adm .modal-header .modal-title { display: flex; align-items: center; gap: .7rem; }
+    .adm .modal-header .m-ico {
+        width: 34px; height: 34px; border-radius: 50%; font-size: .8rem;
+        display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, .65);
+    }
+    .adm .modal-body { padding: 1.5rem; }
+    .adm .modal-footer { padding: 1rem 1.5rem; background: #fcf9f9; }
+    .adm .form-check-input { width: 1.15rem; height: 1.15rem; margin-top: .2rem; }
+
+    /* Floating notification (JS alert) */
+    .adm #jsAlert { box-shadow: 0 12px 28px -14px rgba(60, 0, 0, .35); }
+
+    @media (max-width: 767.98px) {
+        .adm .filter-panel { margin-left: .5rem; margin-right: .5rem; }
+        .adm table thead th, .adm table tbody td { padding-left: 1rem; padding-right: 1rem; }
+        .adm .donors-table td, .adm .donors-table th { white-space: nowrap; }
+    }
 </style>
 
 
 <div class="adm">
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div class="page-hero has-overlap d-flex flex-wrap justify-content-between align-items-end gap-3" data-mark="DONOR">
+        <div class="rbc-field" aria-hidden="true">
+        <span class="rbc" style="--x:62%;--y:12%;--s:clamp(70px,8vw,120px);--rx:60deg;--ry:-18deg;--rz:20deg;--blur:1.5px;--dur:11s;"><i></i></span>
+        <span class="rbc" style="--x:78%;--y:46%;--s:clamp(90px,11vw,170px);--rx:64deg;--ry:10deg;--rz:-12deg;--dur:12s;--delay:-4s;--fx:-12px;--fy:-16px;"><i style="--spin:38s"></i></span>
+        <span class="rbc" style="--x:88%;--y:6%;--s:clamp(40px,4vw,60px);--rx:48deg;--ry:22deg;--rz:-30deg;--blur:3px;--dur:9s;"><i></i></span>
+        <span class="rbc" style="--x:68%;--y:72%;--s:clamp(50px,5vw,80px);--rx:52deg;--ry:-25deg;--rz:40deg;--blur:1px;--dur:13s;--delay:-2s;"><i></i></span>
+        <span class="rbc" style="--x:6%;--y:70%;--s:clamp(36px,3.5vw,54px);--rx:55deg;--ry:-20deg;--rz:30deg;--blur:4px;--dur:10s;--delay:-6s;"><i></i></span>
+    </div>
         <div>
+            <div class="page-eyebrow"><b>02</b> Donors</div>
             <h2 class="h4 page-title">Donors Management</h2>
             <p class="page-sub">{{ $donors->total() }} {{ Str::plural('donor', $donors->total()) }} in the system</p>
         </div>
@@ -107,14 +96,17 @@
     </div>
 
     <!-- Filters -->
-    <div class="panel mb-4">
+    <div class="panel filter-panel mb-4">
         <div class="p-3">
             <form method="GET" action="{{ route('donors.index') }}" class="row g-2 align-items-center">
                 <div class="col-md-5">
-                    <input type="text" name="city" class="form-control" placeholder="Search by city..." value="{{ request('city') }}">
+                    <div class="search-wrap">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="city" class="form-control" placeholder="Search by city..." aria-label="Search by city" value="{{ request('city') }}">
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <select name="blood_group" class="form-select">
+                    <select name="blood_group" class="form-select" aria-label="Filter by blood group">
                         <option value="">All blood groups</option>
                         @foreach(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $group)
                             <option value="{{ $group }}" {{ request('blood_group') == $group ? 'selected' : '' }}>{{ $group }}</option>
@@ -123,7 +115,7 @@
                 </div>
                 <div class="col-md-3 d-flex gap-2">
                     <button type="submit" class="btn btn-brand flex-grow-1"><i class="fa-solid fa-filter me-1"></i> Filter</button>
-                    <a href="{{ route('donors.index') }}" class="btn btn-soft">Reset</a>
+                    <a href="{{ route('donors.index') }}" class="btn btn-soft d-inline-flex align-items-center">Reset</a>
                 </div>
             </form>
         </div>
@@ -133,14 +125,14 @@
     <div id="jsAlert" class="alert d-none" role="alert"></div>
     @foreach (['success' => 'success', 'info' => 'info', 'error' => 'danger'] as $key => $type)
         @if(session($key))
-            <div class="alert alert-{{ $type }}">{{ session($key) }}</div>
+            <div class="alert alert-{{ $type }}" role="alert">{{ session($key) }}</div>
         @endif
     @endforeach
 
     <!-- Donors table -->
     <div class="panel">
         <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table align-middle donors-table">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -154,7 +146,12 @@
                 <tbody id="donorTableBody">
                 @forelse ($donors as $donor)
                     <tr id="donor-row-{{ $donor->id }}">
-                        <td class="fw-bold donor-name">{{ $donor->name }}</td>
+                        <td>
+                            <div class="donor-cell">
+                                <span class="avatar" aria-hidden="true">{{ strtoupper(mb_substr($donor->name, 0, 1)) }}</span>
+                                <span class="donor-name">{{ $donor->name }}</span>
+                            </div>
+                        </td>
                         <td><span class="group-pill donor-blood-group">{{ $donor->blood_group }}</span></td>
                         <td>
                             <span class="donor-phone">{{ $donor->phone }}</span>
@@ -166,11 +163,11 @@
 
                         <td>
                             @if($donor->donation_pending)
-                                <span class="tag tag-wait"><i class="fa-solid fa-clock me-1"></i>Pending</span>
+                                <span class="tag tag-wait">Pending</span>
                             @elseif(!$donor->is_eligible)
                                 @php $daysLeft = max(0, 90 - (int) $donor->last_donated_at->diffInDays(now())); @endphp
                                 <span class="tag tag-cool" title="Donated on {{ $donor->last_donated_at->format('d M Y') }}">
-                                    <i class="fa-solid fa-hourglass-half me-1"></i>Cooldown ({{ $daysLeft }}d left)
+                                    Cooldown ({{ $daysLeft }}d left)
                                 </span>
                             @elseif($donor->is_available)
                                 <span class="tag tag-ok donor-status">Available</span>
@@ -180,10 +177,13 @@
                         </td>
 
                         <td class="text-end">
-                            <div class="d-inline-flex gap-1 align-items-center">
+                            <div class="actions">
                                 @if($donor->is_eligible)
                                     <form action="{{ route('donors.markDonated', $donor->id) }}" method="POST" class="d-inline"
-                                          onsubmit="return confirm('Confirm that this donor has donated blood? Status will move to a 90-day cooldown.')">
+                                          data-ajax-form="true"
+                                          data-confirm="Confirm that this donor has donated blood? Status will move to a 90-day cooldown."
+                                          data-success-message="Donation confirmed successfully."
+                                          data-remove-row="true">
                                         @csrf
                                         <button type="submit" class="btn btn-donated" title="Mark as donated today">
                                             <i class="fa-solid fa-droplet me-1"></i>Donated
@@ -191,17 +191,19 @@
                                     </form>
                                 @endif
 
-                                <button type="button" class="icon-btn" title="Copy donor link" onclick="copyDonorLink({{ $donor->id }})">
+                                <button type="button" class="icon-btn" title="Copy donor link" aria-label="Copy donor link" onclick="copyDonorLink({{ $donor->id }})">
                                     <i class="fa-solid fa-link"></i>
                                 </button>
 
-                                <button type="button" class="icon-btn edit" title="Edit"
+                                <button type="button" class="icon-btn edit" title="Edit" aria-label="Edit donor"
                                         data-id="{{ $donor->id }}"
                                         data-name="{{ $donor->name }}"
                                         data-phone="{{ $donor->phone }}"
+                                        data-email="{{ $donor->email }}"
                                         data-group="{{ $donor->blood_group }}"
                                         data-city="{{ $donor->city }}"
                                         data-available="{{ $donor->is_available ? 1 : 0 }}"
+                                        data-alert="{{ $donor->notify_urgent_requests ? 1 : 0 }}"
                                         data-gender="{{ $donor->gender }}"
                                         data-guardian-name="{{ $donor->guardian_name }}"
                                         data-guardian-relation="{{ $donor->guardian_relation }}"
@@ -210,7 +212,7 @@
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
 
-                                <button type="button" class="icon-btn" title="Delete" onclick="deleteDonor({{ $donor->id }})">
+                                <button type="button" class="icon-btn danger" title="Delete" aria-label="Delete donor" onclick="deleteDonor({{ $donor->id }})">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
@@ -218,7 +220,11 @@
                     </tr>
                 @empty
                     <tr id="noDataRow">
-                        <td colspan="6" class="empty-row">No donors registered yet.</td>
+                        <td colspan="6" class="empty-row">
+                            <span class="ring"><i class="fa-solid fa-user-plus"></i></span>
+                            <strong>No donors registered yet</strong>
+                            Use the Add Donor button to register the first one.
+                        </td>
                     </tr>
                 @endforelse
                 </tbody>
@@ -237,8 +243,8 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <form id="addDonorForm" class="modal-content shadow">
                 <div class="modal-header brand">
-                    <h5 class="modal-title fw-bold">Add New Blood Donor</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title fw-bold"><span class="m-ico"><i class="fa-solid fa-user-plus"></i></span>Add New Blood Donor</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div id="modalErrors" class="alert alert-danger d-none"></div>
@@ -249,8 +255,12 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Personal phone number</label>
-                        <input type="text" name="phone" class="form-control" placeholder="03001234567" required>
+                        <input type="text" name="phone" class="form-control" placeholder="03001234567" inputmode="tel" required>
                         <div class="sub-line"><i class="fa-solid fa-lock me-1"></i>This number will not be shown publicly for female donors.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email address <span class="text-muted small">(for urgent blood alerts)</span></label>
+                        <input type="email" name="email" class="form-control" placeholder="donor@example.com">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Gender</label>
@@ -282,7 +292,7 @@
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Guardian phone / WhatsApp</label>
-                                <input type="text" name="guardian_phone" class="form-control" placeholder="03009876543">
+                                <input type="text" name="guardian_phone" class="form-control" placeholder="03009876543" inputmode="tel">
                             </div>
                         </div>
                     </div>
@@ -302,9 +312,15 @@
                             <input type="text" name="city" class="form-control" placeholder="e.g. Sargodha" required>
                         </div>
                     </div>
-                    <div class="form-check">
+                    <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" name="is_available" value="1" id="isAvailable" checked>
                         <label class="form-check-label fw-semibold" for="isAvailable">Available to donate</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="notify_urgent_requests" value="1" id="notifyAlerts" checked>
+                        <label class="form-check-label fw-semibold text-danger" for="notifyAlerts">
+                            <i class="fa-solid fa-envelope me-1"></i> Send emergency blood request alerts
+                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -320,8 +336,8 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <form id="editDonorForm" class="modal-content shadow">
                 <div class="modal-header edit">
-                    <h5 class="modal-title fw-bold">Edit Blood Donor</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title fw-bold"><span class="m-ico"><i class="fa-solid fa-pen"></i></span>Edit Blood Donor</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div id="editModalErrors" class="alert alert-danger d-none"></div>
@@ -334,7 +350,11 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Phone number</label>
-                        <input type="text" name="phone" id="edit_phone" class="form-control" required>
+                        <input type="text" name="phone" id="edit_phone" class="form-control" inputmode="tel" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email address <span class="text-muted small">(for urgent blood alerts)</span></label>
+                        <input type="email" name="email" id="edit_email" class="form-control" placeholder="donor@example.com">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Gender</label>
@@ -364,7 +384,7 @@
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Guardian phone / WhatsApp</label>
-                                <input type="text" name="guardian_phone" id="edit_guardian_phone" class="form-control">
+                                <input type="text" name="guardian_phone" id="edit_guardian_phone" class="form-control" inputmode="tel">
                             </div>
                         </div>
                     </div>
@@ -382,9 +402,15 @@
                             <input type="text" name="city" id="edit_city" class="form-control" required>
                         </div>
                     </div>
-                    <div class="form-check">
+                    <div class="form-check mb-2">
                         <input class="form-check-input" type="checkbox" name="available" value="1" id="edit_isAvailable">
                         <label class="form-check-label fw-semibold" for="edit_isAvailable">Available for donation</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="notify_urgent_requests" value="1" id="edit_notify_urgent_requests">
+                        <label class="form-check-label fw-semibold text-danger" for="edit_notify_urgent_requests">
+                            <i class="fa-solid fa-envelope me-1"></i> Send emergency blood request alerts
+                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -465,9 +491,11 @@ function openEditModal(btn) {
     document.getElementById('edit_donor_id').value = d.id;
     document.getElementById('edit_name').value = d.name;
     document.getElementById('edit_phone').value = d.phone;
+    document.getElementById('edit_email').value = d.email || '';
     document.getElementById('edit_blood_group').value = d.group;
     document.getElementById('edit_city').value = d.city;
     document.getElementById('edit_isAvailable').checked = d.available === '1';
+    document.getElementById('edit_notify_urgent_requests').checked = d.alert !== '0';
     editGender.value = d.gender || 'Male';
     document.getElementById('edit_guardian_name').value = d.guardianName || '';
     document.getElementById('edit_guardian_relation').value = d.guardianRelation || 'Father';
@@ -504,25 +532,31 @@ document.getElementById('addDonorForm').addEventListener('submit', async functio
             const tr = document.createElement('tr');
             tr.id = `donor-row-${d.id}`;
             tr.innerHTML = `
-                <td class="fw-bold donor-name">${esc(d.name)}</td>
+                <td>
+                    <div class="donor-cell">
+                        <span class="avatar" aria-hidden="true">${esc((d.name || '').charAt(0).toUpperCase())}</span>
+                        <span class="donor-name">${esc(d.name)}</span>
+                    </div>
+                </td>
                 <td><span class="group-pill donor-blood-group">${esc(d.blood_group)}</span></td>
                 <td>${phoneCellHtml(d)}</td>
                 <td class="donor-city">${esc(d.city)}</td>
                 <td>${statusTag(d.available)}</td>
                 <td class="text-end">
-                    <div class="d-inline-flex gap-1 align-items-center">
-                        <button type="button" class="icon-btn" title="Copy donor link" onclick="copyDonorLink(${d.id})">
+                    <div class="actions">
+                        <button type="button" class="icon-btn" title="Copy donor link" aria-label="Copy donor link" onclick="copyDonorLink(${d.id})">
                             <i class="fa-solid fa-link"></i>
                         </button>
-                        <button type="button" class="icon-btn edit" title="Edit"
+                        <button type="button" class="icon-btn edit" title="Edit" aria-label="Edit donor"
                             data-id="${d.id}" data-name="${esc(d.name)}" data-phone="${esc(d.phone)}"
+                            data-email="${esc(d.email || '')}" data-alert="${d.notify_urgent_requests ? 1 : 0}"
                             data-group="${esc(d.blood_group)}" data-city="${esc(d.city)}"
                             data-available="${d.available ? 1 : 0}" data-gender="${esc(d.gender)}"
                             data-guardian-name="${esc(d.guardian_name)}" data-guardian-relation="${esc(d.guardian_relation)}"
                             data-guardian-phone="${esc(d.guardian_phone)}" onclick="openEditModal(this)">
                             <i class="fa-solid fa-pen"></i>
                         </button>
-                        <button type="button" class="icon-btn" title="Delete" onclick="deleteDonor(${d.id})">
+                        <button type="button" class="icon-btn danger" title="Delete" aria-label="Delete donor" onclick="deleteDonor(${d.id})">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </div>
@@ -571,6 +605,9 @@ document.getElementById('editDonorForm').addEventListener('submit', async functi
             const row = document.getElementById(`donor-row-${d.id}`);
             if (row) {
                 row.querySelector('.donor-name').innerText = d.name;
+                // keep the avatar initial in sync with the name (UI only)
+                const av = row.querySelector('.avatar');
+                if (av) av.innerText = (d.name || '').charAt(0).toUpperCase();
                 row.querySelector('.donor-blood-group').innerText = d.blood_group;
                 row.children[2].innerHTML = phoneCellHtml(d);
                 row.querySelector('.donor-city').innerText = d.city;
@@ -581,8 +618,9 @@ document.getElementById('editDonorForm').addEventListener('submit', async functi
 
                 const editBtn = row.querySelector('.icon-btn.edit');
                 Object.assign(editBtn.dataset, {
-                    name: d.name, phone: d.phone, group: d.blood_group,
-                    city: d.city, available: d.available ? 1 : 0,
+                    name: d.name, phone: d.phone, email: d.email || '',
+                    group: d.blood_group, city: d.city, available: d.available ? 1 : 0,
+                    alert: d.notify_urgent_requests ? 1 : 0,
                     gender: d.gender || '', guardianName: d.guardian_name || '',
                     guardianRelation: d.guardian_relation || '', guardianPhone: d.guardian_phone || ''
                 });
